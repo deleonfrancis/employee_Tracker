@@ -1,0 +1,28 @@
+{
+  "name": "employee_tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deleonfrancis/employee_Tracker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/deleonfrancis/employee_Tracker/issues"
+  },
+  "homepage": "https://github.com/deleonfrancis/employee_Tracker#readme",
+  "dependencies": {
+    "asciiart-logo": "^0.2.6",
+    "console.table": "^0.10.0",
+    "inquirer": "^7.3.3",
+    "msql": "^1.0.3",
+    "myql": "^1.0.0",
+    "mysql": "^2.18.1"
+  }
+}
