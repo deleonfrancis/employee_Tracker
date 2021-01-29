@@ -39,11 +39,11 @@ function startAction() {
         case "View All Roles":
           return viewRoles();
           break;
+        case "Add a Department":
+          return addDepartment();
+          break;
         case "Add Employee":
           return addEmployee();
-          break;
-        case "Remove Employee":
-          return removeEmployee();
           break;
         case "Update Employee Role":
           return upEmployeeRole();
@@ -77,19 +77,16 @@ function begin() {
 // ===================================================================================================================================================================================================
 // Function for viewing all the employees
 function viewEmployees() {
-  connection.query(
-    "SELECT * FROM employee",
-    function (err, listOfEmployees) {
-      if (err) throw err;
-      console.table(listOfEmployees);
-      // console.log("You are in viewEmployees");
-      startAction();
-    }
-  );
+  connection.query("SELECT * FROM employee", function (err, listOfEmployees) {
+    if (err) throw err;
+    console.table(listOfEmployees);
+    // console.log("You are in viewEmployees");
+    startAction();
+  });
 }
 
 // ===================================================================================================================================================================================================
-// Function for viewing Department
+// Function for viewing all Departments
 function viewDeparts() {
   connection.query(
     "SELECT * FROM department",
@@ -103,23 +100,99 @@ function viewDeparts() {
 }
 
 // ===================================================================================================================================================================================================
+// Function for viewing all roles
 function viewRoles() {
-  connection.query(
-    "SELECT * FROM role",
-    function (err, listOfRoles) {
-      if (err) throw err;
-      console.table(listOfRoles);
-      // console.log("You are in viewEmployees");
-      startAction();
-    }
-  );
+  connection.query("SELECT * FROM role", function (err, listOfRoles) {
+    if (err) throw err;
+    console.table(listOfRoles);
+    // console.log("You are in viewEmployees");
+    startAction();
+  });
 }
 
 // ===================================================================================================================================================================================================
+// Function for adding a Department
+function addDepartment() {
+  // query the database for all items being auctioned
+  connection.query("SELECT * FROM role", function (err, results) {
+    if (err) throw err;
+    // once you have the items, prompt the user for which they'd like to bid on
+    inquirer
+      .prompt([
+        {
+          name: "addEmpFirst_Name",
+          type: "input",
+          message: "What is the First Name of yor new employee?",
+          //   Check for an input
+          validate: function (name) {
+            if (!name) {
+              console.log("     ...Please enter a name");
+              return false;
+            } else {
+              return true;
+            }
+          },
+        },
+        {
+          name: "addEmpLast_Name",
+          type: "input",
+          message: "What is the new employee's Last Name?",
+          //   Check for an input
+          validate: function (name) {
+            if (!name) {
+              console.log("     ...Please enter a name");
+              return false;
+            } else {
+              return true;
+            }
+          },
+        },
+        {
+          name: "addEmpRole",
+          type: "list",
+          message: "What is the Employee's role?",
+          choices: function () {
+            var arrayOfRoles = [];
+            for (var i = 0; i < results.length; i++) {
+              arrayOfRoles.push(results[i].title);
+            }
+            return arrayOfRoles;
+          },
+        },
+        {
+          name: "addManager",
+          type: "input",
+          message: "Who is the Manger of this employee?",
+        },
+      ])
+      .then(function (answer) {
+        var roleChoice;
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].title === answer.addEmpRole) {
+            roleChoice = results[i].id;
+          }
+        }
+        // when finished prompting, insert a new item into the db with that info
+        connection.query(
+          "INSERT INTO employee SET ?",
+          {
+            first_name: answer.addEmpFirst_Name,
+            last_name: answer.addEmpLast_Name,
+            role_id: roleChoice,
+            manager_id: answer.addManager,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log("You successfully added an employee!");
+            // re-prompt the user to the beginning
+            startAction();
+          }
+        );
+      });
+  });
+}
 
-
-
-
+// ===================================================================================================================================================================================================
 // Function for adding an employee
 function addEmployee() {
   // query the database for all items being auctioned
@@ -173,7 +246,8 @@ function addEmployee() {
           type: "input",
           message: "Who is the Manger of this employee?",
         },
-      ]).then(function (answer) {
+      ])
+      .then(function (answer) {
         var roleChoice;
         for (var i = 0; i < results.length; i++) {
           if (results[i].title === answer.addEmpRole) {
@@ -187,7 +261,7 @@ function addEmployee() {
             first_name: answer.addEmpFirst_Name,
             last_name: answer.addEmpLast_Name,
             role_id: roleChoice,
-            manager_id: answer.addManager
+            manager_id: answer.addManager,
           },
           function (err) {
             if (err) throw err;
