@@ -186,7 +186,7 @@ function addNewRole() {
           name: "salary",
           type: "input",
           message: "What is the salary of this new role?",
-          //   Check for a number
+          // Check for a number
           validate: function (name) {
             if (isNaN(name)) {
               console.log("     ...Please enter a valid number.");
@@ -203,16 +203,16 @@ function addNewRole() {
           choices: function () {
             var arrayOfDepartments = [];
             for (var i = 0; i < results.length; i++) {
-              arrayOfDepartments.push(results[i].title);
+              arrayOfDepartments.push(results[i].name);
             }
             return arrayOfDepartments;
           },
-        }
+        },
       ])
       .then(function (answer) {
         var departmentChoice;
         for (var i = 0; i < results.length; i++) {
-          if (results[i].title === answer.roleTitle) {
+          if (results[i].name === answer.departId) {
             departmentChoice = results[i].id;
           }
         }
@@ -221,10 +221,12 @@ function addNewRole() {
           "INSERT INTO role SET ?",
           {
             title: answer.roleTitle,
+            salary: answer.salary,
+            department_id: departmentChoice
           },
           function (err) {
             if (err) throw err;
-            console.log("You successfully added a Department!");
+            console.log("You successfully added a Role!");
             // re-prompt the user to the beginning
             startAction();
           }
@@ -233,8 +235,8 @@ function addNewRole() {
   });
 }
 
-
 // ^addNewRole
+
 // ===================================================================================================================================================================================================
 // Function for adding an employee
 function addEmployee() {
