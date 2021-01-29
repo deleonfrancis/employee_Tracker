@@ -9,6 +9,7 @@ const logo = require("asciiart-logo");
 // invoking the function that presents the logo and starts the questions
 begin();
 
+// Function that starts the prompts 
 function startAction() {
   inquirer
     .prompt({
@@ -22,10 +23,10 @@ function startAction() {
         "Add a Department",
         "Add a New Role",
         "Add an Employee",
-        "Update Employee Manager",
+        "Update an Employee's Role",
         "Exit",
       ],
-      // default: "Exit",
+      default: "Exit",
     })
     .then(function (answer) {
       // Run each function based on answer
@@ -48,8 +49,8 @@ function startAction() {
         case "Add a New Role":
           return addNewRole();
           break;
-        case "Update Employee Manager":
-          return upManagerRole();
+        case "Update an Employee's Role":
+          return updateEmpRole()();
           break;
         case "Exit":
           connection.end();
@@ -77,6 +78,7 @@ function begin() {
 
 // ===================================================================================================================================================================================================
 // ===================================================================================================================================================================================================
+
 // Function for viewing all the employees
 function viewEmployees() {
   connection.query("SELECT * FROM employee", function (err, listOfEmployees) {
@@ -89,6 +91,7 @@ function viewEmployees() {
 // ^viewEmployees
 
 // ===================================================================================================================================================================================================
+
 // Function for viewing all Departments
 function viewDeparts() {
   connection.query(
@@ -104,6 +107,7 @@ function viewDeparts() {
 // ^viewDeparts
 
 // ===================================================================================================================================================================================================
+
 // Function for viewing all roles
 function viewRoles() {
   connection.query("SELECT * FROM role", function (err, listOfRoles) {
@@ -116,6 +120,7 @@ function viewRoles() {
 // ^viewRoles
 
 // ===================================================================================================================================================================================================
+
 // Function for adding a Department
 function addDepartment() {
   // query the database for all items being auctioned
@@ -159,8 +164,8 @@ function addDepartment() {
 // ^addDepartment
 
 // ===================================================================================================================================================================================================
-// Function for adding a new role
 
+// Function for adding a new role
 function addNewRole() {
   // query the database for all items being auctioned
   connection.query("SELECT * FROM department", function (err, results) {
@@ -238,6 +243,7 @@ function addNewRole() {
 // ^addNewRole
 
 // ===================================================================================================================================================================================================
+
 // Function for adding an employee
 function addEmployee() {
   // query the database for all items being auctioned
@@ -322,20 +328,70 @@ function addEmployee() {
 
 // ===================================================================================================================================================================================================
 
-// function vEmployeesByManager() {
-//   console.log("view Employees by Manager function.");
-// }
+// Function for updating the employee roles
+function updateEmpRole() {
+  console.log("updateEmpRole! you here!");
+  // query the database for all items being auctioned
+  connection.query("SELECT * FROM role", function(err, results) {
+    if (err) throw err;
+    // once you have the items, prompt the user for which they'd like to bid on
+    inquirer
+      .prompt([
+        {
+          name: "choice",
+          type: "rawlist",
+          choices: function() {
+            var rolesArray = [];
+            for (var i = 0; i < results.length; i++) {
+              rolesArray.push(results[i].role_title);
+            }
+            return rolesArray;
+          },
+          message: "What auction would you like to place a bid in?"
+        },
+        {
+          name: "bid",
+          type: "input",
+          message: "How much would you like to bid?"
+        }
+      ])
+      .then(function(answer) {
+        // get the information of the chosen item
+        var chosenItem;
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].item_name === answer.choice) {
+            chosenItem = results[i];
+          }
+        }
 
-// function removeEmployee() {
-//   console.log("remove Employee function.");
-// }
+        // determine if bid was high enough
+        if (chosenItem.highest_bid < parseInt(answer.bid)) {
+          // bid was high enough, so update db, let the user know, and start over
+          connection.query(
+            "UPDATE auctions SET ? WHERE ?",
+            [
+              {
+                highest_bid: answer.bid
+              },
+              {
+                id: chosenItem.id
+              }
+            ],
+            function(error) {
+              if (error) throw err;
+              console.log("Bid placed successfully!");
+              start();
+            }
+          );
+        }
+        else {
+          // bid wasn't high enough, so apologize and start over
+          console.log("Your bid was too low. Try again...");
+          start();
+        }
+      });
+  });
+}
+// ^updateEmpRole
 
-// function upEmployeeRole() {
-//   console.log("update Employee role function.");
-// }
-
-// function upManagerRole() {
-//   console.log("update Manager role function.");
-// }
-
-// module.exports = start;
+// ===================================================================================================================================================================================================
