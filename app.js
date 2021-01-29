@@ -48,7 +48,7 @@ function startAction() {
           return addNewRole();
           break;
         case "Update an Employee's Role":
-          return updateEmpRole()();
+          return updateEmpRole();
           break;
         case "Exit":
           connection.end();
@@ -332,67 +332,85 @@ function addEmployee() {
 
 // ===================================================================================================================================================================================================
 
+// Used in updateEmpRole to store incoming data from the role table
+var rolesData = [];
+
 // Function for updating the employee roles
 function updateEmpRole() {
-  // query the database for all items being auctioned
-  connection.query("SELECT * FROM role", function (err, results) {
+  // query the database for all items in employees
+  connection.query("SELECT * FROM employee", function (err, results) {
     if (err) throw err;
-    // once you have the items, prompt the user for which they'd like to bid on
+    connection.query("SELECT * FROM role", function (err, data) {
+      if (err) throw err;
+      rolesData = data;
+    });
+
+    // once you have the items, prompt the user for which employee's role they'd like upgrade
     inquirer
       .prompt([
         {
-          name: "choice",
-          type: "rawlist",
+          name: "updateRole",
+          type: "list",
+          message: "Which employee would you like to do a role change on?",
           choices: function () {
-            var rolesArray = [];
+            var empRolesArray = [];
+
             for (var i = 0; i < results.length; i++) {
-              rolesArray.push(results[i].role_title);
+              empRolesArray.push(
+                results[i].first_name + " " + results[i].last_name
+              );
             }
-            return rolesArray;
+            return empRolesArray;
           },
-          message: "What auction would you like to place a bid in?",
         },
         {
-          name: "bid",
-          type: "input",
-          message: "How much would you like to bid?",
+          name: "roleChange",
+          type: "list",
+          message: "What you wou like their new role to be?",
+          choices: function () {
+            var empRolesArray = [];
+
+            for (var i = 0; i < rolesData.length; i++) {
+              empRolesArray.push(rolesData[i].title);
+            }
+            return empRolesArray;
+          },
         },
       ])
       .then(function (answer) {
+        console.log(answer.roleChange, answer.updateRole, "380");
         // get the information of the chosen item
-        var chosenItem;
-        for (var i = 0; i < results.length; i++) {
-          if (results[i].item_name === answer.choice) {
-            chosenItem = results[i];
+        var idOfTheRole;
+        for (var i = 0; i < rolesData.length; i++) {
+          if (rolesData[i].title === answer.roleChange) {
+            idOfTheRole = rolesData[i].id;
           }
         }
 
-        // determine if bid was high enough
-        if (chosenItem.highest_bid < parseInt(answer.bid)) {
-          // bid was high enough, so update db, let the user know, and start over
-          connection.query(
-            "UPDATE auctions SET ? WHERE ?",
-            [
-              {
-                highest_bid: answer.bid,
-              },
-              {
-                id: chosenItem.id,
-              },
-            ],
-            function (error) {
-              if (error) throw err;
-              console.log("Bid placed successfully!");
-              start();
-            }
-          );
-        } else {
-          // bid wasn't high enough, so apologize and start over
-          console.log("Your bid was too low. Try again...");
-
-          // takes the user back to the start for the prompts where they can exit or take another action.
-          startAction();
+        var chosenName;
+        for (var i = 0; i < results.length; i++) {
+          if (
+            results[i].first_name + " " + results[i].last_name ===
+            answer.updateRole
+          ) {
+            chosenName = results[i].id;
+          }
         }
+        console.log(idOfTheRole, chosenName, "398");
+        // determine if bid was high enough
+        connection.query(
+          "UPDATE employee SET role_id = ? WHERE id = ?",
+          [idOfTheRole, chosenName],
+          function (error) {
+            if (error) throw err;
+            console.log(
+              `You've successfully changes ${answer.updateRole}'s role!"`
+            );
+
+            // takes the user back to the start for the prompts where they can exit or take another action.
+            startAction();
+          }
+        );
       });
   });
 }

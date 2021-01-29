@@ -18,3 +18,7 @@ CREATE TABLE employee (
   role_id INT UNSIGNED NOT NULL,
   manager_id INT UNSIGNED
 );
+
+SELECT employee.role_id, role.id
+FROM employee
+INNER JOIN role ON employee.role_id = role.id;
