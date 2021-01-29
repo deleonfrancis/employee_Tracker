@@ -19,8 +19,8 @@ function startAction() {
         "View All Employees",
         "View All Departments",
         "View All Roles",
-        "Add Employee",
-        "Remove Employee",
+        "Add a Department",
+        "Add an Employee",
         "Update Employee Role",
         "Update Employee Manager",
         "Exit",
@@ -42,7 +42,7 @@ function startAction() {
         case "Add a Department":
           return addDepartment();
           break;
-        case "Add Employee":
+        case "Add an Employee":
           return addEmployee();
           break;
         case "Update Employee Role":
@@ -73,7 +73,9 @@ function begin() {
 // ===================================================================================================================================================================================================
 // ===================================================================================================================================================================================================
 
-// Start of create all the functions
+// Start of create all the functions for startAction functionality
+
+// ===================================================================================================================================================================================================
 // ===================================================================================================================================================================================================
 // Function for viewing all the employees
 function viewEmployees() {
@@ -84,6 +86,7 @@ function viewEmployees() {
     startAction();
   });
 }
+// ^viewEmployees
 
 // ===================================================================================================================================================================================================
 // Function for viewing all Departments
@@ -98,6 +101,7 @@ function viewDeparts() {
     }
   );
 }
+// ^viewDeparts
 
 // ===================================================================================================================================================================================================
 // Function for viewing all roles
@@ -109,81 +113,42 @@ function viewRoles() {
     startAction();
   });
 }
+// ^viewRoles
 
 // ===================================================================================================================================================================================================
 // Function for adding a Department
 function addDepartment() {
   // query the database for all items being auctioned
-  connection.query("SELECT * FROM role", function (err, results) {
+  connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     // once you have the items, prompt the user for which they'd like to bid on
     inquirer
       .prompt([
         {
-          name: "addEmpFirst_Name",
+          name: "departmentName",
           type: "input",
-          message: "What is the First Name of yor new employee?",
+          message: "What is the name of the department you'd like to add?",
           //   Check for an input
           validate: function (name) {
             if (!name) {
-              console.log("     ...Please enter a name");
+              console.log("     ...Please enter a department name.");
               return false;
             } else {
               return true;
             }
           },
-        },
-        {
-          name: "addEmpLast_Name",
-          type: "input",
-          message: "What is the new employee's Last Name?",
-          //   Check for an input
-          validate: function (name) {
-            if (!name) {
-              console.log("     ...Please enter a name");
-              return false;
-            } else {
-              return true;
-            }
-          },
-        },
-        {
-          name: "addEmpRole",
-          type: "list",
-          message: "What is the Employee's role?",
-          choices: function () {
-            var arrayOfRoles = [];
-            for (var i = 0; i < results.length; i++) {
-              arrayOfRoles.push(results[i].title);
-            }
-            return arrayOfRoles;
-          },
-        },
-        {
-          name: "addManager",
-          type: "input",
-          message: "Who is the Manger of this employee?",
         },
       ])
       .then(function (answer) {
-        var roleChoice;
-        for (var i = 0; i < results.length; i++) {
-          if (results[i].title === answer.addEmpRole) {
-            roleChoice = results[i].id;
-          }
-        }
         // when finished prompting, insert a new item into the db with that info
         connection.query(
-          "INSERT INTO employee SET ?",
+          "INSERT INTO department SET ?",
           {
-            first_name: answer.addEmpFirst_Name,
-            last_name: answer.addEmpLast_Name,
-            role_id: roleChoice,
-            manager_id: answer.addManager,
+            name: answer.departmentName,
           },
           function (err) {
             if (err) throw err;
-            console.log("You successfully added an employee!");
+            console.log("You successfully added a Department!");
             // re-prompt the user to the beginning
             startAction();
           }
@@ -191,6 +156,7 @@ function addDepartment() {
       });
   });
 }
+// ^addDepartment
 
 // ===================================================================================================================================================================================================
 // Function for adding an employee
@@ -208,7 +174,7 @@ function addEmployee() {
           //   Check for an input
           validate: function (name) {
             if (!name) {
-              console.log("     ...Please enter a name");
+              console.log("     ...Please enter a First Name");
               return false;
             } else {
               return true;
@@ -222,7 +188,7 @@ function addEmployee() {
           //   Check for an input
           validate: function (name) {
             if (!name) {
-              console.log("     ...Please enter a name");
+              console.log("     ...Please enter a Last Name");
               return false;
             } else {
               return true;
@@ -273,6 +239,8 @@ function addEmployee() {
       });
   });
 }
+// ^addEmployee
+
 // ===================================================================================================================================================================================================
 
 // function vEmployeesByManager() {
