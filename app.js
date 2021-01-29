@@ -1,7 +1,5 @@
 const inquirer = require("inquirer");
 const connection = require("./db/connection");
-// const addEmployee = require("./functions/addEmp");
-// const viewEmployees = require("./functions/viewEmps");
 
 // Require ascii art for the logo in the prompt.
 const logo = require("asciiart-logo");
@@ -9,7 +7,7 @@ const logo = require("asciiart-logo");
 // invoking the function that presents the logo and starts the questions
 begin();
 
-// Function that starts the prompts 
+// Function that starts the prompts
 function startAction() {
   inquirer
     .prompt({
@@ -61,13 +59,13 @@ function startAction() {
     });
 }
 
-// function that displays the logo and prompts the user for what action they should take
+// function that displays the logo and prompts the user for what action they want to take
 function begin() {
   // displays the logo
   const logoText = logo({ name: "Employee Manager" }).render();
   console.log(logoText);
 
-  // prompts the user for what action they should take
+  // prompts the user for what action they want to take
   startAction();
 }
 
@@ -84,7 +82,8 @@ function viewEmployees() {
   connection.query("SELECT * FROM employee", function (err, listOfEmployees) {
     if (err) throw err;
     console.table(listOfEmployees);
-    // console.log("You are in viewEmployees");
+
+    // takes the user back to the start for the prompts where they can exit or take another action.
     startAction();
   });
 }
@@ -99,7 +98,8 @@ function viewDeparts() {
     function (err, listOfDepartments) {
       if (err) throw err;
       console.table(listOfDepartments);
-      // console.log("You are in viewEmployees");
+
+      // takes the user back to the start for the prompts where they can exit or take another action.
       startAction();
     }
   );
@@ -113,7 +113,8 @@ function viewRoles() {
   connection.query("SELECT * FROM role", function (err, listOfRoles) {
     if (err) throw err;
     console.table(listOfRoles);
-    // console.log("You are in viewEmployees");
+
+    // takes the user back to the start for the prompts where they can exit or take another action.
     startAction();
   });
 }
@@ -123,7 +124,7 @@ function viewRoles() {
 
 // Function for adding a Department
 function addDepartment() {
-  // query the database for all items being auctioned
+  // query the database for all items in department
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     // once you have the items, prompt the user for which they'd like to bid on
@@ -154,7 +155,8 @@ function addDepartment() {
           function (err) {
             if (err) throw err;
             console.log("You successfully added a Department!");
-            // re-prompt the user to the beginning
+
+            // takes the user back to the start for the prompts where they can exit or take another action.
             startAction();
           }
         );
@@ -167,7 +169,7 @@ function addDepartment() {
 
 // Function for adding a new role
 function addNewRole() {
-  // query the database for all items being auctioned
+  // query the database for all items in department
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
     // once you have the items, prompt the user for which they'd like to bid on
@@ -227,12 +229,13 @@ function addNewRole() {
           {
             title: answer.roleTitle,
             salary: answer.salary,
-            department_id: departmentChoice
+            department_id: departmentChoice,
           },
           function (err) {
             if (err) throw err;
             console.log("You successfully added a Role!");
-            // re-prompt the user to the beginning
+
+            // takes the user back to the start for the prompts where they can exit or take another action.
             startAction();
           }
         );
@@ -246,7 +249,7 @@ function addNewRole() {
 
 // Function for adding an employee
 function addEmployee() {
-  // query the database for all items being auctioned
+  // query the database for all items in role
   connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
     // once you have the items, prompt the user for which they'd like to bid on
@@ -317,7 +320,8 @@ function addEmployee() {
           function (err) {
             if (err) throw err;
             console.log("You successfully added an employee!");
-            // re-prompt the user to the beginning
+
+            // takes the user back to the start for the prompts where they can exit or take another action.
             startAction();
           }
         );
@@ -330,9 +334,8 @@ function addEmployee() {
 
 // Function for updating the employee roles
 function updateEmpRole() {
-  console.log("updateEmpRole! you here!");
   // query the database for all items being auctioned
-  connection.query("SELECT * FROM role", function(err, results) {
+  connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
     // once you have the items, prompt the user for which they'd like to bid on
     inquirer
@@ -340,22 +343,22 @@ function updateEmpRole() {
         {
           name: "choice",
           type: "rawlist",
-          choices: function() {
+          choices: function () {
             var rolesArray = [];
             for (var i = 0; i < results.length; i++) {
               rolesArray.push(results[i].role_title);
             }
             return rolesArray;
           },
-          message: "What auction would you like to place a bid in?"
+          message: "What auction would you like to place a bid in?",
         },
         {
           name: "bid",
           type: "input",
-          message: "How much would you like to bid?"
-        }
+          message: "How much would you like to bid?",
+        },
       ])
-      .then(function(answer) {
+      .then(function (answer) {
         // get the information of the chosen item
         var chosenItem;
         for (var i = 0; i < results.length; i++) {
@@ -371,23 +374,24 @@ function updateEmpRole() {
             "UPDATE auctions SET ? WHERE ?",
             [
               {
-                highest_bid: answer.bid
+                highest_bid: answer.bid,
               },
               {
-                id: chosenItem.id
-              }
+                id: chosenItem.id,
+              },
             ],
-            function(error) {
+            function (error) {
               if (error) throw err;
               console.log("Bid placed successfully!");
               start();
             }
           );
-        }
-        else {
+        } else {
           // bid wasn't high enough, so apologize and start over
           console.log("Your bid was too low. Try again...");
-          start();
+
+          // takes the user back to the start for the prompts where they can exit or take another action.
+          startAction();
         }
       });
   });
