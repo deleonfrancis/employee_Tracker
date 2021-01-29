@@ -20,8 +20,8 @@ function startAction() {
         "View All Departments",
         "View All Roles",
         "Add a Department",
+        "Add a New Role",
         "Add an Employee",
-        "Update Employee Role",
         "Update Employee Manager",
         "Exit",
       ],
@@ -45,8 +45,8 @@ function startAction() {
         case "Add an Employee":
           return addEmployee();
           break;
-        case "Update Employee Role":
-          return upEmployeeRole();
+        case "Add a New Role":
+          return addNewRole();
           break;
         case "Update Employee Manager":
           return upManagerRole();
@@ -158,6 +158,15 @@ function addDepartment() {
 }
 // ^addDepartment
 
+// ===================================================================================================================================================================================================
+// Function for adding a new role
+function addNewRole() {
+  
+}
+
+
+
+// ^addNewRole
 // ===================================================================================================================================================================================================
 // Function for adding an employee
 function addEmployee() {
