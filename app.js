@@ -160,10 +160,78 @@ function addDepartment() {
 
 // ===================================================================================================================================================================================================
 // Function for adding a new role
-function addNewRole() {
-  
-}
 
+function addNewRole() {
+  // query the database for all items being auctioned
+  connection.query("SELECT * FROM department", function (err, results) {
+    if (err) throw err;
+    // once you have the items, prompt the user for which they'd like to bid on
+    inquirer
+      .prompt([
+        {
+          name: "roleTitle",
+          type: "input",
+          message: "What is the title of this new role?",
+          //   Check for an input
+          validate: function (name) {
+            if (!name) {
+              console.log("     ...Please enter a name.");
+              return false;
+            } else {
+              return true;
+            }
+          },
+        },
+        {
+          name: "salary",
+          type: "input",
+          message: "What is the salary of this new role?",
+          //   Check for a number
+          validate: function (name) {
+            if (isNaN(name)) {
+              console.log("     ...Please enter a valid number.");
+              return false;
+            } else {
+              return true;
+            }
+          },
+        },
+        {
+          name: "departId",
+          type: "list",
+          message: "What is the department ID for this role?",
+          choices: function () {
+            var arrayOfDepartments = [];
+            for (var i = 0; i < results.length; i++) {
+              arrayOfDepartments.push(results[i].title);
+            }
+            return arrayOfDepartments;
+          },
+        }
+      ])
+      .then(function (answer) {
+        var departmentChoice;
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].title === answer.roleTitle) {
+            departmentChoice = results[i].id;
+          }
+        }
+        // when finished prompting, insert a new item into the db with that info
+        connection.query(
+          "INSERT INTO role SET ?",
+          {
+            title: answer.roleTitle,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log("You successfully added a Department!");
+            // re-prompt the user to the beginning
+            startAction();
+          }
+        );
+      });
+  });
+}
 
 
 // ^addNewRole
