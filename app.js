@@ -146,7 +146,7 @@ function addDepartment() {
         },
       ])
       .then(function (answer) {
-        // when finished prompting, insert a new item into the db with that info
+        // when finished prompting, insert new department
         connection.query(
           "INSERT INTO department SET ?",
           {
@@ -172,7 +172,7 @@ function addNewRole() {
   // query the database for all items in department
   connection.query("SELECT * FROM department", function (err, results) {
     if (err) throw err;
-    // once you have the items, prompt the user for which they'd like to bid on
+    // once you have the items, prompt the user questions for new role
     inquirer
       .prompt([
         {
@@ -223,7 +223,7 @@ function addNewRole() {
             departmentChoice = results[i].id;
           }
         }
-        // when finished prompting, insert a new item into the db with that info
+        // when finished prompting, insert a new role
         connection.query(
           "INSERT INTO role SET ?",
           {
@@ -252,7 +252,7 @@ function addEmployee() {
   // query the database for all items in role
   connection.query("SELECT * FROM role", function (err, results) {
     if (err) throw err;
-    // once you have the items, prompt the user for which they'd like to bid on
+    // once you have the items, prompt the user questions for added a new employee
     inquirer
       .prompt([
         {
@@ -308,7 +308,7 @@ function addEmployee() {
             roleChoice = results[i].id;
           }
         }
-        // when finished prompting, insert a new item into the db with that info
+        // when finished prompting, insert a new employee
         connection.query(
           "INSERT INTO employee SET ?",
           {

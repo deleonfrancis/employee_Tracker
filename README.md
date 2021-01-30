@@ -35,7 +35,7 @@ JavaScript, node.js, mysql
 ---
 
 ## How To Use
-Open the employee_Tracker Folder in the terminal. Type node app.js in the command line once node.js is already installed. Answer the prompted questions and Bild Your Team! 
+Open the 'employee_Tracker' Folder in the terminal. Type 'node app.js' in the command line once node.js is already installed. Answer the prompted questions and Build Your Team! 
    
    [Back To The Top](#read-me-template)
    
@@ -43,7 +43,7 @@ Open the employee_Tracker Folder in the terminal. Type node app.js in the comman
 
 ## Links
 
-Link to site:
+Link to video of working app:
 https://github.com/deleonfrancis/employee_Tracker/blob/main/Assets/empTracker.mov
 
 Link to GitHub repository:
