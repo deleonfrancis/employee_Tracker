@@ -354,7 +354,6 @@ function updateEmpRole() {
           message: "Which employee would you like to do a role change on?",
           choices: function () {
             var empRolesArray = [];
-
             for (var i = 0; i < results.length; i++) {
               empRolesArray.push(
                 results[i].first_name + " " + results[i].last_name
@@ -378,8 +377,6 @@ function updateEmpRole() {
         },
       ])
       .then(function (answer) {
-        console.log(answer.roleChange, answer.updateRole, "380");
-        // get the information of the chosen item
         var idOfTheRole;
         for (var i = 0; i < rolesData.length; i++) {
           if (rolesData[i].title === answer.roleChange) {
@@ -396,15 +393,15 @@ function updateEmpRole() {
             chosenName = results[i].id;
           }
         }
-        console.log(idOfTheRole, chosenName, "398");
-        // determine if bid was high enough
+ 
+        // Update role ID
         connection.query(
           "UPDATE employee SET role_id = ? WHERE id = ?",
           [idOfTheRole, chosenName],
           function (error) {
             if (error) throw err;
             console.log(
-              `You've successfully changes ${answer.updateRole}'s role!"`
+              `You've successfully changed ${answer.updateRole}'s role!"`
             );
 
             // takes the user back to the start for the prompts where they can exit or take another action.
